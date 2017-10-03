@@ -33,7 +33,7 @@ public class AdactinTestSet extends AdactinTest {
 				+ "\"\n-------------------");
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void TC103() throws NoSuchElementException {
 		String checkInDate = AppBasics.substractDays(5);
 		String checkOutDate = AppBasics.substractDays(3);
@@ -64,7 +64,7 @@ public class AdactinTestSet extends AdactinTest {
 		takeScreenshot("TC104");
 		String actualValue = this.driver.findElement(By.id("location_0")).getAttribute("value").toString();
 		Assert.assertEquals(actualValue, "Sydney");
-		System.out.println("TC104\n" + "Selected location is: " + "\"" + actualValue + "\"\n-------------------");
+		System.out.println("TC104\n" + "Selected location is: " + actualValue + "\"\n-------------------");
 	}
 
 	@Test(enabled = true)
@@ -81,5 +81,32 @@ public class AdactinTestSet extends AdactinTest {
 		Assert.assertEquals(checkOutValue, checkOutDate);
 		System.out.println("TC105\n" + "Check-in-Date is: " + "\"" + checkInValue + "\n" + "Check-out_Date is: " + "\""
 				+ checkOutValue + "\"\n-------------------");
+	}
+
+	@Test(enabled = true)
+	public void TC106() throws NoSuchElementException {
+		String checkInDate = AppBasics.addDays(0);
+		String checkOutDate = AppBasics.addDays(1);
+		this.login();
+		SearchHotelPage searchPage = new SearchHotelPage(this);
+		searchPage.searchHotels("Sydney", "Hotel Creek", "Standard", "3", checkInDate, checkOutDate, "1");
+		takeScreenshot("TC106");
+		String numRooms = this.driver.findElement(By.id("rooms_0")).getAttribute("value").toString();
+		Assert.assertEquals(numRooms, "3 Rooms");
+		System.out.println(
+				"TC106\n" + "Selected number of rooms is: " + "\"" + numRooms + "\"" + "\"\n-------------------");
+	}
+
+	@Test
+	public void TC107() throws NoSuchElementException {
+		String checkInDate = AppBasics.addDays(0);
+		String checkOutDate = AppBasics.addDays(1);
+		this.login();
+		SearchHotelPage searchPage = new SearchHotelPage(this);
+		searchPage.searchHotels("Sydney", "Hotel Creek", "Deluxe", "1", checkInDate, checkOutDate, "1");
+		takeScreenshot("TC107");
+		String roomType = this.driver.findElement(By.id("room_type_0")).getAttribute("value").toString();
+		Assert.assertEquals(roomType, "Deluxe");
+		System.out.println("TC107\n" + "Selected Room Type is: " + "\"" + roomType + "\"" + "\"\n-------------------");
 	}
 }
