@@ -29,7 +29,7 @@ public class AppBasics {
 
 	public static String addDays(int days) {
 		LocalDate date = LocalDate.now().plusDays(days);
-		DateTimeFormatter formatters = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		DateTimeFormatter formatters = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		String date1 = date.format(formatters);
 		return date1;
 	}

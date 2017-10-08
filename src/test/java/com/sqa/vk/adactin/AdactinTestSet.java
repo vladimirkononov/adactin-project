@@ -1,6 +1,7 @@
 package com.sqa.vk.adactin;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -14,7 +15,7 @@ public class AdactinTestSet extends AdactinTest {
 		homePage.login(this.getProp("username"), this.getProp("password"));
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void TC102() throws NoSuchElementException {
 		String checkInDate = AppBasics.addDays(7);
 		String checkOutDate = AppBasics.addDays(5);
@@ -54,7 +55,7 @@ public class AdactinTestSet extends AdactinTest {
 				+ "\"\n-------------------");
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void TC104() throws NoSuchElementException {
 		String checkInDate = AppBasics.addDays(0);
 		String checkOutDate = AppBasics.addDays(1);
@@ -67,7 +68,7 @@ public class AdactinTestSet extends AdactinTest {
 		System.out.println("TC104\n" + "Selected location is: " + actualValue + "\"\n-------------------");
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void TC105() throws NoSuchElementException {
 		String checkInDate = AppBasics.addDays(0);
 		String checkOutDate = AppBasics.addDays(1);
@@ -83,7 +84,7 @@ public class AdactinTestSet extends AdactinTest {
 				+ checkOutValue + "\"\n-------------------");
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void TC106() throws NoSuchElementException {
 		String checkInDate = AppBasics.addDays(0);
 		String checkOutDate = AppBasics.addDays(1);
@@ -97,7 +98,7 @@ public class AdactinTestSet extends AdactinTest {
 				"TC106\n" + "Selected number of rooms is: " + "\"" + numRooms + "\"" + "\"\n-------------------");
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void TC107() throws NoSuchElementException {
 		String checkInDate = AppBasics.addDays(0);
 		String checkOutDate = AppBasics.addDays(1);
@@ -108,5 +109,53 @@ public class AdactinTestSet extends AdactinTest {
 		String roomType = this.driver.findElement(By.id("room_type_0")).getAttribute("value").toString();
 		Assert.assertEquals(roomType, "Deluxe");
 		System.out.println("TC107\n" + "Selected Room Type is: " + "\"" + roomType + "\"" + "\"\n-------------------");
+	}
+
+	@Test(enabled = false)
+	public void TC108() throws NumberFormatException {
+		String checkInDate = AppBasics.addDays(0);
+		String checkOutDate = AppBasics.addDays(1);
+		this.login();
+		SearchHotelPage searchPage = new SearchHotelPage(this);
+		searchPage.searchHotels("Sydney", "Hotel Creek", "Standard", "2", checkInDate, checkOutDate, "1");
+		takeScreenshot("TC108");
+		String pricePerNight = this.driver.findElement(By.id("price_night_0")).getAttribute("value").toString();
+		pricePerNight = pricePerNight.replaceAll("[^0-9]", "");
+		String numOfNights = this.driver.findElement(By.id("no_days_0")).getAttribute("value").toString();
+		numOfNights = numOfNights.replaceAll("[^0-9]", "");
+		String numOfRooms = this.driver.findElement(By.id("rooms_0")).getAttribute("value").toString();
+		numOfRooms = numOfRooms.replaceAll("[^0-9]", "");
+		String actualTotalPrice = this.driver.findElement(By.id("total_price_0")).getAttribute("value").toString();
+		actualTotalPrice = actualTotalPrice.replaceAll("[^0-9]", "");
+		int actualPrice = Integer.parseInt(actualTotalPrice);
+		int nightPrice = Integer.parseInt(pricePerNight);
+		int nightNum = Integer.parseInt(numOfNights);
+		int roomNum = Integer.parseInt(numOfRooms);
+		int totalPrice = nightPrice * nightNum * roomNum;
+		Assert.assertEquals(actualPrice, totalPrice);
+		System.out.println("Price per night is: " + nightPrice + "\n" + "Number of nights is: " + nightNum + "\n"
+				+ "Number of rooms is: " + roomNum + "\n" + "Total Price is: " + actualPrice);
+		System.out.println("\"\n-------------------");
+	}
+
+	@Test(enabled = true)
+	public void TC109() throws NoSuchElementException, InterruptedException {
+		String checkInDate = AppBasics.addDays(0);
+		String checkOutDate = AppBasics.addDays(1);
+		this.login();
+		SearchHotelPage searchPage = new SearchHotelPage(this);
+		searchPage.searchHotels("Sydney", "Hotel Creek", "Standard", "2", checkInDate, checkOutDate, "1");
+		this.driver.findElement(By.id("radiobutton_0")).click();
+		this.driver.findElement(By.id("continue")).click();
+		BookHotelPage bookPage = new BookHotelPage(this);
+		bookPage.bookHotel("Vlad", "Kononov", "21 Solitude CT, Oakley, CA 94561", "1111111111111111", "VISA", "5",
+				"2021", "222");
+		WebDriverWait wait = new WebDriverWait(this.driver, 30);
+		WebElement bookingConfirmation;
+		bookingConfirmation = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("logout")));
+		takeScreenshot("TC109_booked");
+		bookingConfirmation.click();
+		takeScreenshot("TC109_loggedout");
+		Assert.assertTrue(this.driver.getPageSource().contains("You have successfully logged out."));
 	}
 }
