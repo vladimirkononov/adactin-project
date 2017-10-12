@@ -16,6 +16,8 @@ public class AdactinTestSet extends AdactinTest {
 	}
 
 	@Test(enabled = false)
+	// To verify whether the check-out date field accepts a later date than
+	// check-in date.
 	public void TC102() throws NoSuchElementException {
 		String checkInDate = AppBasics.addDays(7);
 		String checkOutDate = AppBasics.addDays(5);
@@ -35,6 +37,7 @@ public class AdactinTestSet extends AdactinTest {
 	}
 
 	@Test(enabled = false)
+	// To check if error is reported if check-out date field is in the past
 	public void TC103() throws NoSuchElementException {
 		String checkInDate = AppBasics.substractDays(5);
 		String checkOutDate = AppBasics.substractDays(3);
@@ -56,6 +59,8 @@ public class AdactinTestSet extends AdactinTest {
 	}
 
 	@Test(enabled = false)
+	// To verify whether locations in Select Hotel page are displayed
+	// according to the location selected in Search Hotel
 	public void TC104() throws NoSuchElementException {
 		String checkInDate = AppBasics.addDays(0);
 		String checkOutDate = AppBasics.addDays(1);
@@ -69,6 +74,8 @@ public class AdactinTestSet extends AdactinTest {
 	}
 
 	@Test(enabled = false)
+	// To verify whether Check-in date and Check-out date are being displayed in
+	// Select Hotel page according to the dates selected in search Hotel.
 	public void TC105() throws NoSuchElementException {
 		String checkInDate = AppBasics.addDays(0);
 		String checkOutDate = AppBasics.addDays(1);
@@ -85,6 +92,8 @@ public class AdactinTestSet extends AdactinTest {
 	}
 
 	@Test(enabled = false)
+	// To verify whether no. of rooms in Select Hotel page is same as the
+	// Number of rooms selected in search hotel page
 	public void TC106() throws NoSuchElementException {
 		String checkInDate = AppBasics.addDays(0);
 		String checkOutDate = AppBasics.addDays(1);
@@ -99,6 +108,8 @@ public class AdactinTestSet extends AdactinTest {
 	}
 
 	@Test(enabled = false)
+	// To verify whether Room Type in Select Hotel page is same as Room type
+	// selected in search hotel page
 	public void TC107() throws NoSuchElementException {
 		String checkInDate = AppBasics.addDays(0);
 		String checkOutDate = AppBasics.addDays(1);
@@ -112,6 +123,8 @@ public class AdactinTestSet extends AdactinTest {
 	}
 
 	@Test(enabled = false)
+	// To verify whether the total price (excl.GST) is calculated as “price per
+	// night * no. of nights* no of rooms”.
 	public void TC108() throws NumberFormatException {
 		String checkInDate = AppBasics.addDays(0);
 		String checkOutDate = AppBasics.addDays(1);
@@ -135,10 +148,11 @@ public class AdactinTestSet extends AdactinTest {
 		Assert.assertEquals(actualPrice, totalPrice);
 		System.out.println("Price per night is: " + nightPrice + "\n" + "Number of nights is: " + nightNum + "\n"
 				+ "Number of rooms is: " + roomNum + "\n" + "Total Price is: " + actualPrice);
-		System.out.println("\"\n-------------------");
+		System.out.println("\n-------------------");
 	}
 
 	@Test(enabled = true)
+	// To verify when pressed, logout button logs out from the application.
 	public void TC109() throws NoSuchElementException, InterruptedException {
 		String checkInDate = AppBasics.addDays(0);
 		String checkOutDate = AppBasics.addDays(1);
@@ -157,5 +171,65 @@ public class AdactinTestSet extends AdactinTest {
 		bookingConfirmation.click();
 		takeScreenshot("TC109_loggedout");
 		Assert.assertTrue(this.driver.getPageSource().contains("You have successfully logged out."));
+		System.out.println("\n-------------------");
+	}
+
+	@Test(enabled = false)
+	// Verify that total-price is being calculated as
+	// (price-per-night*no-of-rooms*no-of-days + 10% GST”)
+	public void TC110() throws NoSuchElementException {
+		String checkInDate = AppBasics.addDays(0);
+		String checkOutDate = AppBasics.addDays(1);
+		this.login();
+		SearchHotelPage searchPage = new SearchHotelPage(this);
+		searchPage.searchHotels("Melbourne", "Hotel Creek", "Standard", "2", checkInDate, checkOutDate, "1");
+		this.driver.findElement(By.id("radiobutton_0")).click();
+		this.driver.findElement(By.id("continue")).click();
+		BookHotelPage bookPage = new BookHotelPage(this);
+		takeScreenshot("TC110");
+		String numRooms = bookPage.getNumRooms().replaceAll("[^0-9]", "");
+		String numDays = bookPage.getNumDays().replaceAll("[^0-9]", "");
+		String priceNight = bookPage.getPriceNight().replaceAll("[^0-9]", "");
+		String finalPrice = bookPage.getFinalPrice().replaceAll("[^0-9]", "");
+		String gstNum = bookPage.getGst().replaceAll("[^0-9]", "");
+		int numOfRooms = Integer.parseInt(numRooms);
+		int numOfDays = Integer.parseInt(numDays);
+		int pricePerNight = Integer.parseInt(priceNight);
+		double totalPrice = Integer.parseInt(finalPrice);
+		totalPrice = totalPrice * 10.0 / 100.0;
+		double gst = Integer.parseInt(gstNum);
+		gst = gst * 10.0 / 100.0;
+		double totalPriceCalculated = pricePerNight * numOfRooms * numOfDays + gst;
+		System.out.println("The number of rooms: " + numOfRooms + "\n" + "The nunber of Days: " + numOfDays + "\n"
+				+ "Price Per Night is: " + pricePerNight + "\n" + "GST is: " + gst);
+		System.out.println("The total price CALCULATED is: " + totalPriceCalculated);
+		Assert.assertEquals(totalPrice, totalPriceCalculated);
+		System.out.println("\n-------------------");
+	}
+
+	@Test(enabled = true)
+	// To check Hotel name, Location, room type, Total Day, price per night are
+	// same in Booking confirmation page as they were selected in previous
+	// screen
+	public void TC111() throws Exception {
+		String checkInDate = AppBasics.addDays(0);
+		String checkOutDate = AppBasics.addDays(1);
+		this.login();
+		SearchHotelPage searchPage = new SearchHotelPage(this);
+		searchPage.searchHotels("Sydney", "Hotel Creek", "Standard", "2", checkInDate, checkOutDate, "1");
+		SelectHotelPage selectHotel = new SelectHotelPage(this);
+		takeScreenshot("TC111_SelectPage");
+		selectHotel.getSelectButton().click();
+		selectHotel.getContinueButton().click();
+		takeScreenshot("TC111_BookHotelPage");
+		BookHotelPage bookPage = new BookHotelPage(this);
+		Assert.assertEquals(selectHotel.getHotel().toString(), bookPage.getHotel().toString());
+		Assert.assertEquals(selectHotel.getLocation().toString(), bookPage.getLocation().toString());
+		Assert.assertEquals(selectHotel.getRoom().toString(), bookPage.getRoom().toString());
+		Assert.assertEquals(selectHotel.getDays().toString().replaceAll("[^0-9]", ""),
+				bookPage.getNumDays().toString().replaceAll("[^0-9]", ""));
+		Assert.assertEquals(selectHotel.getPriceNight().toString(), bookPage.getPriceNight().toString());
+		System.out.println("Data on the \"Select Hotel\" page matches data on the \"Book Hotel\" page.");
+		System.out.println("\n-------------------");
 	}
 }
