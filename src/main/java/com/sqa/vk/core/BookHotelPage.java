@@ -69,6 +69,8 @@ public class BookHotelPage extends BasicPage {
 
 	String priceNight = this.pricePerNight.getAttribute("value").toString();
 
+	String total = this.totalPrice.getAttribute("value").toString();
+
 	String gst = this.gstDis.getAttribute("value").toString();
 
 	String finalPrice = this.finalPriceDis.getAttribute("value").toString();
@@ -155,6 +157,13 @@ public class BookHotelPage extends BasicPage {
 	}
 
 	/**
+	 * @return the total
+	 */
+	public String getTotal() {
+		return this.total;
+	}
+
+	/**
 	 * @param finalPrice
 	 *            the finalPrice to set
 	 */
@@ -216,6 +225,14 @@ public class BookHotelPage extends BasicPage {
 	 */
 	public void setRoom(String room) {
 		this.room = room;
+	}
+
+	/**
+	 * @param total
+	 *            the total to set
+	 */
+	public void setTotal(String total) {
+		this.total = total;
 	}
 
 	/**

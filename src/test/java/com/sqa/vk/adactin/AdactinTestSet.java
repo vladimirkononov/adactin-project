@@ -151,7 +151,7 @@ public class AdactinTestSet extends AdactinTest {
 		System.out.println("\n-------------------");
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	// To verify when pressed, logout button logs out from the application.
 	public void TC109() throws NoSuchElementException, InterruptedException {
 		String checkInDate = AppBasics.addDays(0);
@@ -207,7 +207,7 @@ public class AdactinTestSet extends AdactinTest {
 		System.out.println("\n-------------------");
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	// To check Hotel name, Location, room type, Total Day, price per night are
 	// same in Booking confirmation page as they were selected in previous
 	// screen
@@ -230,6 +230,64 @@ public class AdactinTestSet extends AdactinTest {
 				bookPage.getNumDays().toString().replaceAll("[^0-9]", ""));
 		Assert.assertEquals(selectHotel.getPriceNight().toString(), bookPage.getPriceNight().toString());
 		System.out.println("Data on the \"Select Hotel\" page matches data on the \"Book Hotel\" page.");
+		System.out.println("\n-------------------");
+	}
+
+	@Test(enabled = false)
+	// To check correct Final billed price is Total Price + 10% Total price in
+	// Book a Hotel page
+	public void TC112() throws Exception {
+		String checkInDate = AppBasics.addDays(0);
+		String checkOutDate = AppBasics.addDays(1);
+		this.login();
+		SearchHotelPage searchPage = new SearchHotelPage(this);
+		searchPage.searchHotels("Sydney", "Hotel Creek", "Standard", "2", checkInDate, checkOutDate, "1");
+		SelectHotelPage selectHotel = new SelectHotelPage(this);
+		takeScreenshot("TC112_SelectPage");
+		selectHotel.getSelectButton().click();
+		selectHotel.getContinueButton().click();
+		takeScreenshot("TC112_BookHotelPage");
+		BookHotelPage bookPage = new BookHotelPage(this);
+		String totalPrice = bookPage.getTotal().replaceAll("[^0-9]", "");
+		String gstNum = bookPage.getGst().replaceAll("[^0-9]", "");
+		String finalBilledPrice = bookPage.getFinalPrice().replaceAll("[^0-9]", "");
+		double total = Integer.parseInt(totalPrice);
+		double gst = Integer.parseInt(gstNum);
+		gst = gst * 10.0 / 100.0;
+		double finalPriceCalculated = total + gst;
+		double finalPrice = Integer.parseInt(finalBilledPrice);
+		finalPrice = finalPrice * 10.0 / 100.0;
+		System.out.println("here is the final price: " + finalPrice + "\nhere is the CALCULATED final price: "
+				+ finalPriceCalculated);
+		Assert.assertEquals(finalPrice, finalPriceCalculated);
+		System.out.println("\n-------------------");
+	}
+
+	@Test(enabled = true)
+	// To verify whether the data displayed is same as the selected data in Book
+	// hotel page
+	public void TC113() throws Exception {
+		String checkInDate = AppBasics.addDays(0);
+		String checkOutDate = AppBasics.addDays(1);
+		this.login();
+		SearchHotelPage searchPage = new SearchHotelPage(this);
+		searchPage.searchHotels("Sydney", "Hotel Creek", "Standard", "2", checkInDate, checkOutDate, "1");
+		SelectHotelPage selectHotel = new SelectHotelPage(this);
+		String roomNumberSelected = selectHotel.getNumRooms().replaceAll("[^0-9]", "");
+		takeScreenshot("TC113_SelectPage");
+		selectHotel.getSelectButton().click();
+		selectHotel.getContinueButton().click();
+		takeScreenshot("TC113_BookHotelPage");
+		BookHotelPage bookPage = new BookHotelPage(this);
+		String roomNumberBooked = bookPage.getNumRooms().replaceAll("[^0-9]", "");
+		System.out.println("Hotel name: " + selectHotel.getHotel() + "\nRoom type: " + selectHotel.getRoom()
+				+ "\nNumber of rooms: " + selectHotel.getNumRooms());
+		System.out.println("\n-------------------");
+		System.out.println("Hotel name: " + bookPage.getHotel() + "\nRoom type: " + bookPage.getRoom()
+				+ "\nNumber of rooms: " + bookPage.getNumRooms());
+		Assert.assertEquals(selectHotel.getHotel(), bookPage.getHotel());
+		Assert.assertEquals(selectHotel.getRoom(), bookPage.getRoom());
+		Assert.assertEquals(roomNumberSelected, roomNumberBooked);
 		System.out.println("\n-------------------");
 	}
 }
